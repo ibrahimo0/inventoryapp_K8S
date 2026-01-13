@@ -12,8 +12,23 @@
  * existing ones and delete them.
  */
 
-// Connect to the MySQL database defined by the ConfigMap/Secret
-$connection = mysqli_connect('localhost', 'root', '', 'sqldb');
+// Connect to the MySQL database defined by environment variables or fall back to defaults.
+// The code first tries to read DB_* environment variables (used in the original
+// tutorial for the PHP todo app) and then falls back to MYSQL_* variables
+// (standard for the MySQL container). If none are provided, it uses
+// localhost/root/(empty password)/sqldb.
+$host = getenv('DB_HOST') ?: getenv('MYSQL_HOST') ?: 'localhost';
+$db   = getenv('DB_NAME') ?: getenv('MYSQL_DATABASE') ?: 'sqldb';
+$user = getenv('DB_USER') ?: getenv('MYSQL_USER') ?: 'root';
+$pass = getenv('DB_PASSWORD');
+if ($pass === false) {
+    // Try MYSQL_PASSWORD or MYSQL_ROOT_PASSWORD as a fallback
+    $pass = getenv('MYSQL_PASSWORD');
+    if ($pass === false) {
+        $pass = getenv('MYSQL_ROOT_PASSWORD') ?: '';
+    }
+}
+$connection = mysqli_connect($host, $user, $pass, $db);
 if (!$connection) {
     die('Database connection failed: ' . mysqli_connect_error());
 }
