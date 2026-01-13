@@ -1,11 +1,7 @@
 # Mini Inventory System (Kubernetes 3-tier Example)
 
 This repository contains a simple PHP/MySQL inventory management application designed
-to be deployed on the same 3-tier Kubernetes architecture as the original
-`3tier_todo_app`.  The project keeps the same number of Pods (MySQL, phpMyAdmin
-and the PHP application) and uses the same ports and secrets.  Only the
-application code and database schema have been changed to implement a more
-realistic CRUD use-case with multiple tables.
+to be deployed on a 3-tier Kubernetes architecture.
 
 ## Features
 
@@ -34,8 +30,7 @@ example that loads `simple_todo.sql`).
 
 ## Running in Kubernetes
 
-This project is designed to run on the same three-tier cluster described in
-the tutorial.  The following high-level steps illustrate how to get up and
+.  The following high-level steps illustrate how to get up and
 running.  Replace resource names and labels as appropriate for your cluster.
 
 1. **Build the Docker image** using the included `Dockerfile`:
@@ -54,8 +49,7 @@ running.  Replace resource names and labels as appropriate for your cluster.
    ```
 
 3. **Create a ConfigMap** supplying the database name, user and
-   password.  Keep the key names the same as the tutorial so that the
-   deployment manifests remain unchanged:
+   password.  
 
    ```yaml
    apiVersion: v1
@@ -67,8 +61,7 @@ running.  Replace resource names and labels as appropriate for your cluster.
      MYSQL_USER: root
    ```
 
-4. **Deploy the MySQL Pod and Service** using the same YAML used in
-   `3tier_todo_app`.  Mount the `inventory.sql` file into the pod at
+4. **Deploy the MySQL Pod and Service**  Mount the `inventory.sql` file into the pod at
    `/docker-entrypoint-initdb.d/` so that MySQL loads the schema on
    startup:
 
@@ -85,12 +78,11 @@ running.  Replace resource names and labels as appropriate for your cluster.
              path: inventory.sql
    ```
 
-5. **Deploy phpMyAdmin** exactly as in the tutorial.  It connects to the
+5. **Deploy phpMyAdmin**   It connects to the
    MySQL service via the `CLUSTER_IP` and exposes a `NodePort` for
    browser access.
 
-6. **Deploy the Inventory Application Pod and Service**.  Use the same
-   deployment manifest as the todo app, but update the image reference to
+6. **Deploy the Inventory Application Pod and Service**. Update the image reference to
    point to `your-registry/inventory-app:latest` from Step 1.  Ensure
    environment variables for `DB_HOST`, `DB_NAME`, `DB_USER` and
    `DB_PASSWORD` match the ConfigMap and Secret created earlier.
@@ -99,5 +91,4 @@ running.  Replace resource names and labels as appropriate for your cluster.
    Use phpMyAdmin to view or modify the underlying tables if needed.
 
 For more detailed guidance on creating Secrets, ConfigMaps and Services, you
-can refer back to the original deployment instructions or Kubernetes
-documentation.
+can refer back to Kubernetes documentation.
