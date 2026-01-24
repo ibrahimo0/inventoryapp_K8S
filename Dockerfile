@@ -8,5 +8,8 @@ RUN apt-get update && \
 # Copy application code into the Apache document root
 COPY . /var/www/html/
 
+# Create uploads directory for file uploads
+RUN mkdir -p /var/www/html/uploads && chown www-data:www-data /var/www/html/uploads
+
 # Expose port 80 (Apache default)
 EXPOSE 80

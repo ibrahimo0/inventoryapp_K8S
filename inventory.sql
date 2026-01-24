@@ -27,6 +27,7 @@ CREATE TABLE `products` (
   `price` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   `quantity` INT NOT NULL DEFAULT 0,
   `supplier_id` INT UNSIGNED DEFAULT NULL,
+  `image_path` VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_products_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -39,6 +40,7 @@ CREATE TABLE `purchases` (
   `supplier_id` INT UNSIGNED NOT NULL,
   `quantity` INT NOT NULL,
   `purchase_date` DATE NOT NULL,
+  `attachment_path` VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_purchases_product` FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_purchases_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers`(`id`) ON DELETE CASCADE
@@ -52,6 +54,7 @@ CREATE TABLE `orders` (
   `quantity` INT NOT NULL,
   `order_date` DATE NOT NULL,
   `status` VARCHAR(50) NOT NULL DEFAULT 'pending',
+  `attachment_path` VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_orders_product` FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -76,3 +79,18 @@ INSERT INTO `purchases` (`product_id`, `supplier_id`, `quantity`, `purchase_date
 INSERT INTO `orders` (`product_id`, `quantity`, `order_date`, `status`) VALUES
 (2, 10, '2025-01-10', 'pending'),
 (3, 5,  '2025-01-12', 'completed');
+
+-- Users table for authentication
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(100) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
+  `role` ENUM('admin','user') DEFAULT 'user',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Create a default admin user (username: admin, password: adminpass)
+INSERT INTO `users` (`username`, `password`, `role`) VALUES
+('admin', SHA2('adminpass', 256), 'admin');
